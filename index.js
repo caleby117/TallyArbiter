@@ -508,6 +508,31 @@ function initialSetup() {
 			socket.emit('device_states', GetDeviceStatesByDeviceId(deviceId));
 		});
 
+		socket.on('device_listen_esp8266', function(obj) { // emitted by the Python blink(1) client that has selected a Device to listen for state information
+			let deviceId = obj.deviceId;
+			let device = GetDeviceByDeviceId(deviceId);
+			if ((deviceId === 'null') || (device.id === 'unassigned')) {
+				if (devices.length > 0) {
+					deviceId = devices[0].id;
+				}
+				else {
+					deviceId = 'unassigned';
+				}
+			}
+
+			let listenerType = 'esp8266';
+
+			socket.join('device-' + deviceId);
+			let deviceName = GetDeviceByDeviceId(deviceId).name;
+			logger(`Listener Client Connected. Type: ${listenerType} Device: ${deviceName}`, 'info');
+
+			let ipAddress = socket.request.connection.remoteAddress;
+			let datetimeConnected = new Date().getTime();
+
+			let clientId = AddListenerClient(socket.id, deviceId, listenerType, ipAddress, datetimeConnected);
+			socket.emit('device_states', GetDeviceStatesByDeviceId(deviceId));
+		});
+
 		socket.on('device_listen_relay', function(relayGroupId, deviceId) { // emitted by the Relay Controller accessory program that has selected a Device to listen for state information
 			let device = GetDeviceByDeviceId(deviceId);
 			if (device.id === 'unassigned') {
