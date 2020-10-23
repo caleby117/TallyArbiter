@@ -686,6 +686,29 @@ function initialSetup() {
 			socket.emit('device_states', GetDeviceStatesByDeviceId(deviceId));
 		});
 
+		socket.on('listener_reassign_esp8266', function(id){
+			var oldDeviceId = id[0];
+			var deviceId = id[1];
+			socket.leave('device-' + oldDeviceId);
+			socket.join('device-' + deviceId);
+
+			for (let i = 0; i < listener_clients.length; i++) {
+				if (listener_clients[i].socketId === socket.id) {
+					listener_clients[i].deviceId = deviceId;
+					listener_clients[i].inactive = false;
+					break;
+				}
+			}
+
+			let oldDeviceName = GetDeviceByDeviceId(oldDeviceId).name;
+			let deviceName = GetDeviceByDeviceId(deviceId).name;
+
+			logger(`Listener Client reassigned from ${oldDeviceName} to ${deviceName}`, 'info');
+			UpdateSockets('listener_clients');
+			UpdateCloud('listener_clients');
+			socket.emit('device_states', GetDeviceStatesByDeviceId(deviceId));
+		})
+
 		socket.on('listener_reassign_relay', function(relayGroupId, oldDeviceId, deviceId) {
 			let canRemove = true;
 			for (let i = 0; i < listener_clients.length; i++) {
