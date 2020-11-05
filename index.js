@@ -508,7 +508,7 @@ function initialSetup() {
 			socket.emit('device_states', GetDeviceStatesByDeviceId(deviceId));
 		});
 
-		socket.on('device_listen_esp8266', function(obj) { // emitted by the Python blink(1) client that has selected a Device to listen for state information
+		socket.on('device_listen_esp8266', function(obj) { // emitted by the ESP2066 client that has selected a Device to listen for state information
 			let deviceId = obj.deviceId;
 			let device = GetDeviceByDeviceId(deviceId);
 			if ((deviceId === 'null') || (device.id === 'unassigned')) {
