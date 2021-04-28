@@ -508,7 +508,7 @@ function initialSetup() {
 			socket.emit('device_states', GetDeviceStatesByDeviceId(deviceId));
 		});
 
-		socket.on('device_listen_esp8266', function(obj) { // emitted by the ESP2066 client that has selected a Device to listen for state information
+		socket.on('device_listen_esp8266', function(obj) { // emitted by the esp8266 that has selected a Device to listen for state information
 			let deviceId = obj.deviceId;
 			let device = GetDeviceByDeviceId(deviceId);
 			if ((deviceId === 'null') || (device.id === 'unassigned')) {
@@ -4327,7 +4327,7 @@ function AddPort(port, sourceId) { //Adds the port to the list of reserved or in
 	UpdateSockets('PortsInUse');
 }
 
-function DeletePort(port) { //Deletes the port from the list of reserved or in-use ports
+function DeletePort(port) { //Deletes the port from the list of reserved or in-use ports 
 	for (let i = 0; i < PortsInUse.length; i++) {
 		if (PortsInUse[i].port === port.toString()) {
 			PortsInUse.splice(i, 1);
